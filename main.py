@@ -5,7 +5,7 @@ from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 from prompt_toolkit.completion import WordCompleter, ThreadedCompleter
 
 CMDCompleter = ThreadedCompleter(
-                    WordCompleter(['list', 'get', 'set', 'cat', 'rm', 'clear', 'exit','write'],
+                    WordCompleter(['list', 'get', 'set', 'cat', 'rm', 'clear', 'exit','write','diff'],
                              ignore_case=True)
                     )
 

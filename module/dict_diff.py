@@ -4,12 +4,11 @@ def diff(o,n):
     return dict(os - ns), dict(ns - os)
 
 def diff_str(o,n):
-    print(o,n)
     dels,adds = diff(o,n)
-    print("-" * 10)
-    for x in dels:
-        print("+ " + x + " = " + dels[x])
     print("-" * 10)
     for x in adds:
         print("+ " + x + " = " + adds[x])
+    print("-" * 10)
+    for x in dels:
+        print("- " + x + " = " + dels[x])
     print("-" * 10)

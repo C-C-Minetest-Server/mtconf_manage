@@ -1,4 +1,4 @@
-# ['list', 'get', 'set', 'cat', 'rm', 'clear', 'exit','write']
+# ['list', 'get', 'set', 'cat', 'rm', 'clear', 'exit','write','diff']
 from prompt_toolkit import prompt
 from prompt_toolkit.history import FileHistory
 from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
@@ -7,6 +7,7 @@ from . import mtconf, dict_diff
 from . import command_apis as api
 import sys, os.path
 diff_str = dict_diff.diff_str
+diff_get = dict_diff.diff
 
 #@api.debug
 @api.no_param
@@ -79,12 +80,18 @@ def clear(conf,param):
 
 #@api.debug
 @api.no_param
+@api.require_api_arg("orig_conf")
 @api.require_api_arg("file")
-def exit(file,param):
-    print("Make sure you saved all your jobs. Do you still want to exit?")
-    if input("(Yes/No) ").lower() != "yes":
-        print("Cancled.")
-        return
+@api.require_api_arg("conf")
+def exit(file,param,orig_conf,conf):
+    adds,dels = diff_get(orig_conf,conf)
+    if len(adds) + len(dels) != 0:
+        print("You have unsaved changes. Do you still want to continue?")
+        diff_str(orig_conf,conf)
+        if input("(Yes/No) ").lower() != "yes":
+            print("Cancled.")
+            return
+
     file.close()
     print("Bye")
     sys.exit()
@@ -105,3 +112,14 @@ def write(conf,file,param,orig_conf):
     print("Writing data into file...")
     file.write(mtconf.render(conf))
     print("Done")
+
+#@api.debug
+@api.no_param
+@api.require_api_arg("orig_conf")
+@api.require_api_arg("conf")
+def diff(param,orig_conf,conf):
+    adds,dels = diff_get(orig_conf,conf)
+    if len(adds) + len(dels) != 0:
+        diff_str(orig_conf,conf)
+    else:
+        print("No changes.")
