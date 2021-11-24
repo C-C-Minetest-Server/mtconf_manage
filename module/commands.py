@@ -1,4 +1,4 @@
-# ['list', 'get', 'set', 'cat', 'rm', 'clear', 'exit','write','diff']
+# ['list', 'get', 'set', 'cat', 'rm', 'clear', 'exit','write','diff','restore','rename']
 from prompt_toolkit import prompt
 from prompt_toolkit.history import FileHistory
 from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
@@ -91,7 +91,6 @@ def exit(file,param,orig_conf,conf):
         if input("(Yes/No) ").lower() != "yes":
             print("Cancled.")
             return
-
     file.close()
     print("Bye")
     sys.exit()
@@ -111,6 +110,7 @@ def write(conf,file,param,orig_conf):
         print("Backup file at {}".format(back_dir))
     print("Writing data into file...")
     file.write(mtconf.render(conf))
+    api.set_api_arg("orig_conf",conf.copy())
     print("Done")
 
 #@api.debug
@@ -123,3 +123,24 @@ def diff(param,orig_conf,conf):
         diff_str(orig_conf,conf)
     else:
         print("No changes.")
+
+#@api.debug
+@api.require_param
+@api.require_api_arg("conf")
+def rename(conf,param):
+    if param[1] not in conf:
+        print("Rename failed: source not exists!")
+    else:
+        user_input = prompt('Enter the new name: ',
+            history = FileHistory('name_history.txt'),
+            auto_suggest = AutoSuggestFromHistory(),
+            )
+        if user_input.__contains__(" "):
+            print("Entry key cannot contain spaces!")
+        elif user_input in conf:
+            print("Rename failed: target already exists!")
+        else:
+            print("Renaming...")
+            conf[user_input] = conf[param[1]]
+            conf.pop(param[1])
+            print("Rename done.")
