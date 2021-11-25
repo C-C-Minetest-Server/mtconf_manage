@@ -3,12 +3,11 @@ from prompt_toolkit import prompt
 from prompt_toolkit.history import FileHistory
 from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 from prompt_toolkit.completion import WordCompleter, ThreadedCompleter
+from inspect import getmembers, isfunction
 
-CMDCompleter = ThreadedCompleter(
-                    WordCompleter(['list', 'get', 'set', 'cat', 'rm', 'clear',
-                            'exit','write','diff','rename'],
-                        ignore_case=True)
-                    )
+cmds = [o[0] for o in getmembers(commands) if isfunction(o[1]) and not o[0].startswith("_")]
+
+CMDCompleter = ThreadedCompleter(WordCompleter(cmds, ignore_case=True))
 
 def main():
     file_path = prompt('Enter the mt.conf path: ',
@@ -32,6 +31,9 @@ def main():
         params = user_input.split(' ',1)
         if len(params) == 0:
             continue
+        elif params[0] == "help":
+            for x in cmds:
+                print("{}: {}".format(x,command_apis.helps[x]))
         else:
             try:
                 getattr(commands, params[0])(param=params)

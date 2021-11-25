@@ -1,6 +1,6 @@
 import re
 
-re_rule = re.compile(r"^([#\w]+) *= *(.+)$",flags=(re.M))
+re_rule = re.compile(r"^(#?\w+) *= *(.+)$",flags=(re.M))
 
 def fromfile(f):
     return read(f.read())
